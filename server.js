@@ -157,6 +157,10 @@ io.on("connection", (socket) => {
     }
   });
 });
+// Root route to confirm server is working
+app.get("/", (req, res) => {
+  res.send("Backend is working!");
+});
 
 server.listen(8081, "0.0.0.0", () => {
   console.log("HTTP + WebSocket server listening on port 8081");
