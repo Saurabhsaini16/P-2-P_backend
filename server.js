@@ -26,7 +26,7 @@ const db = mysql.createConnection({
 
 const resetTokens = {}; 
 
-// SIGNUP
+
 app.post("/signup", (req, res) => {
   const { name, email, password } = req.body;
   const sql = "INSERT INTO login (name, email, password) VALUES (?, ?, ?)";
@@ -36,7 +36,7 @@ app.post("/signup", (req, res) => {
   });
 });
 
-// LOGIN
+
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const sql = "SELECT * FROM login WHERE email = ? AND password = ?";
@@ -50,7 +50,7 @@ app.post("/login", (req, res) => {
   });
 });
 
-// FORGOT PASSWORD
+
 app.post("/forgot-password", (req, res) => {
   const { email } = req.body;
   const sql = "SELECT * FROM login WHERE email = ?";
@@ -71,7 +71,7 @@ app.post("/forgot-password", (req, res) => {
   });
 });
 
-// RESET PASSWORD
+
 app.post("/reset-password/:token", (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
@@ -90,7 +90,7 @@ app.post("/reset-password/:token", (req, res) => {
   });
 });
 
-// SOCKET.IO SETUP
+
 const onlineUsers = {};
 
 io.on("connection", (socket) => {
@@ -157,7 +157,7 @@ io.on("connection", (socket) => {
     }
   });
 });
-// Root route to confirm server is working
+
 app.get("/", (req, res) => {
   res.send("Backend is working!");
 });
