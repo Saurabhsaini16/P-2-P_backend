@@ -16,13 +16,37 @@ const io = new Server(server, {
   maxHttpBufferSize: 1e8,
 });
 
-const db = mysql.createConnection({
-  host: process.env.MYSQL_HOST,
-  port: process.env.MYSQL_PORT || 3307,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: process.env.MYSQL_DATABASE
-});
+let db;
+
+function handleDisconnect() {
+  db = mysql.createConnection({
+    host: process.env.MYSQL_HOST,
+    port: process.env.MYSQL_PORT || 3307,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE
+  });
+
+  db.connect((err) => {
+    if (err) {
+      console.error("Error connecting to MySQL:", err);
+      setTimeout(handleDisconnect, 2000); 
+    } else {
+      console.log("Connected to MySQL");
+    }
+  });
+
+  db.on("error", (err) => {
+    console.error("MySQL error", err);
+    if (err.code === "PROTOCOL_CONNECTION_LOST") {
+      handleDisconnect(); 
+    } else {
+      throw err;
+    }
+  });
+}
+
+handleDisconnect();
 
 const resetTokens = {}; 
 
@@ -86,7 +110,7 @@ app.post("/reset-password/:token", (req, res) => {
     if (err) return res.status(500).json({ message: "Error updating password", error: err });
 
     delete resetTokens[token];
-    res.json({ message: "Password reset successful" }); // FIXED MESSAGE
+    res.json({ message: "Password reset successful" }); 
   });
 });
 
